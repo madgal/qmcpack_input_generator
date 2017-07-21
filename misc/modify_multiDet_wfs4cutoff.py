@@ -9,7 +9,7 @@ def modify_wfs_4_cutoff(cutoffDir,thisDir,initfileroot,wfsfileroot,value):
 
 	newfilename=cutoffDir +"/"+wfsfileroot
 
-	initFile = thiDir +"/" +initfileroot
+	initFile = thisDir +"/" +initfileroot
         os.system("cp "+initFile+".wfs.xml "+newfilename+".wfs.xml")
         os.system("cp "+initFile+".ptcl.xml "+cutoffDir+"/")
 

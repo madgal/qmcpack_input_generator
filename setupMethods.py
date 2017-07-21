@@ -45,6 +45,9 @@ def useQuantumPackageMethod(filename,nojastrow,use3Body,reopt):
 					elementList.append(str(newEl))
 	print "We have received all needed info"
 
+	print "do_psuedo = ",doPseudo
+
+
 
 	if convertType !="QP":
 		print "There is an error: Are you sure this was generated with quantum package?"
@@ -75,7 +78,7 @@ def useQuantumPackageMethod(filename,nojastrow,use3Body,reopt):
 	
 	os.mkdir(dirName)
 	local_fileroot = dirName +"/"+fileroot
-	print "The input files will be place in ",local_fileroot,".ext"
+	print "The input files will be place in ",dirName
 
 	#os.system("./misc/converter_independent.py "+convertType+" "+ filename+" "+ local_fileroot+" "+ flags)
 	import converter_independent
@@ -85,6 +88,11 @@ def useQuantumPackageMethod(filename,nojastrow,use3Body,reopt):
 
 	absfileroot = os.getcwd() + "/"+dirName + "/"+ fileroot
 
+
+	for trypath in sys.path:
+		if os.path.exists(trypath+"generateCutoffDirs4QMC.py"):
+			filePath = trypath
+			break
 
 	### the files should be in one of these two paths which we appended 
 	### so that we could find the files when we executed them outside the
@@ -96,6 +104,9 @@ def useQuantumPackageMethod(filename,nojastrow,use3Body,reopt):
 		### this will call another program which will generate
 		### cutoff directories containing 
 		### optimization and DMC folders
+		import generateCutoffDirs4QMC
+		generateCutoffDirs4QMC.generateCutoff(dirName,absfileroot,fileroot,doPseudo,elementList,filePath)
+		'''
 		for trypath in sys.path:
 			if os.path.exists(trypath+"generateCutoffDirs4QMC.py"):
 				os.system(trypath+"generateCutoffDirs4QMC.py " + str(dirName) + " " + str(absfileroot) + " "+
@@ -104,12 +115,12 @@ def useQuantumPackageMethod(filename,nojastrow,use3Body,reopt):
 				print "File executed"
 				filePath = trypath
 				break
-			else:
-				print "File not found in " ,trypath,", so trying again"
+		'''
 		
 	else:
 		print "Single reference system"
 		### generate the DMC and Optimization folders
+		'''
 		for trypath in sys.path:
 			if os.path.exists(trypath+"setupDMCFolder.py") and os.path.exists(trypath+"setupOptFolder.py"):
 				os.system(trypath+"setupDMCFolder.py " + str(dirName) + " " + str(absfileroot) + " " + str(absfileroot)+" "+
@@ -118,6 +129,11 @@ def useQuantumPackageMethod(filename,nojastrow,use3Body,reopt):
 						 str(fileroot) + "  " +str(doPseudo) + " " +str(elementList)+" " +str(trypath))
 				filePath = trypath
 				break
+		'''
+		import setupDMCFolder
+		setupDMCFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
+		import setupOptFolder
+		setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
 	if not(doPseudo):
 		#os.system("./misc/setupCuspCorrection.py "+dirName+ " " + absfileroot+" " +multidet)
 		print "This is an all electron calculation so the Cusp correction is being added"

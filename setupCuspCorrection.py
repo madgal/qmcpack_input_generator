@@ -4,7 +4,7 @@ def generate_CuspDir(outerDir,fileroot,multiDet,filePath):
 	#!/usr/bin/env python 
 	# -*- coding : utf-8 -*- 
 
-	import os, sys
+	import sys
 
 	outerDir = sys.argv[1]
 
@@ -15,6 +15,7 @@ def generate_CuspDir(outerDir,fileroot,multiDet,filePath):
 
 	'''
 
+	import os
 	import lxml
 	from lxml import etree
 	thisDir = outerDir + "/CuspCorrection"
