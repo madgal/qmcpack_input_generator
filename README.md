@@ -60,5 +60,5 @@ Takes a file from quantum package that is ready for conversion (i.e. save_for_qm
 	     bgq-DMC.sh   DMC.xml   format_data.py
 	     
 	ls Jastrow123_Multi/cutoff_VALUE/Optimization/
-	   
+	     bgq-Opt.sh   Opt.xml   optimize_1Body2Body_multi.py   optimize_3Body.py    optimize_finish.py   plot_OptProg.py
 	    
