@@ -26,3 +26,39 @@ Takes a file from quantum package that is ready for conversion (i.e. save_for_qm
     For mulit determinant  calculations: Withint the main directory there will be cutoff directories containing the Optimization and/or DMC folders.
    
    
+### Example of use
+
+       cd myTest
+       pwd 
+           ~/myTest
+       ls
+           thisSystem.dump
+	   
+       ~/qmcpack_input_generator/setup_QMC_calculation.py setup --filename=thisSystem.dump --method=QP --3BodyJ=True
+       
+	'''We have received all needed info
+		do_psuedo =  False
+		The file is from quantum package
+		The input files will be place in  Jastrow123_MultiDet
+		Beginning conversion
+		Rank =    0  Free Memory = 13699 MB
+		Finished Conversion
+		Multi reference system
+		This is an all electron calculation so the Cusp correction is being added
+		setupMethod.py is done
+		Everything is done
+		'''
+	ls
+	     thisSystem.dump     conversion.out     Jastrow123_Multi
+	ls Jastrow123_Multi/
+	     thisSystem.wfs.xml    thisSystem.ptcl.xml    CuspCorrection   cutoff_VALUE/
+	
+	ls Jastrow123_Multi/cutoff_VALUE/
+	     thisSystem_VALUE.wfs.xml  thisSystem.ptcl.xml   DMC/   Optimization/
+	
+	ls Jastrow123_Multi/cutoff_VALUE/DMC/
+	     bgq-DMC.sh   DMC.xml   format_data.py
+	     
+	ls Jastrow123_Multi/cutoff_VALUE/Optimization/
+	   
+	    
