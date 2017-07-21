@@ -29,10 +29,11 @@ try:
     #print thispath
     sys.path.insert(0, thispath)
     sys.path.insert(0, thispath+"misc/")
+    sys.path.insert(0, thispath+"src/")
 
     import setupMethods 
+    from docopt import docopt
     version="0.0.1"
-    from src.docopt import docopt
 except:
     print "File is corupted. Git reset may fix the issues"
     sys.exit(1)
