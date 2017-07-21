@@ -22,7 +22,11 @@ def makeFolder(outerDir,ptclfileroot,wfsfileroot,filename,usepp,elementList,file
 	
 	
 	info = outerDir.split("/")
-	info = info[len(info)-1]
+
+	for piece in info:
+		if "Jastrow" in piece:
+			info = piece
+			break
 	info = info.split("_")
 	#print info
 	if len(info)==3:
