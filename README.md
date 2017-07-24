@@ -34,6 +34,11 @@ Takes a file from quantum package that is ready for conversion (i.e. save_for_qm
        ls
            thisSystem.dump
 	   
+	   
+##Running within the generated directories using the generated files
+	                
+	
+	   
        ~/qmcpack_input_generator/setup_QMC_calculation.py setup --filename=thisSystem.dump --method=QP --3BodyJ=True
        
 	'''We have received all needed info
