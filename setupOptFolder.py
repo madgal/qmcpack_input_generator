@@ -112,13 +112,13 @@ def makeFolder(outerDir,ptclfileroot,wfsfileroot,filename,usepp,elementList,file
 		    fileName= "optimize_1Body2Body_multi"
 		else:
 		    fileName= "optimize_1Body2Body_single"
-		os.system("cp " + filePath + "misc/"+fileName+".py "+Opt_dir)
+		os.system("cp " + filePath + "misc/"+fileName+".py "+Opt_dir+"/optimize_1Body2Body.py")
 		    
 		if reopt:
-			os.system("cp " + filePath + "misc/optimize_coeffs.py "+Opt_dir)
+			os.system("cp " + filePath + "misc/optimize_and_include_coeffs.py "+Opt_dir)
 	
 		if "3" in  Jtype:
-			os.system("cp " + filePath + "misc/optimize_3Body.py "+Opt_dir)
+			os.system("cp " + filePath + "misc/optimize_and_include_3Body.py "+Opt_dir)
 	
-		os.system("cp " + filePath + "misc/optimize_finish.py "+Opt_dir)
+		os.system("cp " + filePath + "misc/finish_optimization_and_setup_wfs_4_DMC.py "+Opt_dir)
 	
