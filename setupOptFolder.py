@@ -108,11 +108,7 @@ def makeFolder(outerDir,ptclfileroot,wfsfileroot,filename,usepp,elementList,file
         	################################################
 		os.system("cp " + filePath + "misc/bgq-Opt.sh "+outerDir+"/Optimization/")
 	
-		if multi:
-		    fileName= "optimize_1Body2Body_multi"
-		else:
-		    fileName= "optimize_1Body2Body_single"
-		os.system("cp " + filePath + "misc/"+fileName+".py "+Opt_dir+"/optimize_1Body2Body.py")
+		os.system("cp " + filePath + "misc/optimize_1Body2Body.py "+Opt_dir)
 		    
 		if reopt:
 			os.system("cp " + filePath + "misc/optimize_and_include_coeffs.py "+Opt_dir)

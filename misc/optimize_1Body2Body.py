@@ -13,6 +13,14 @@ try:
 	tree= etree.parse(myfile)
 	root = tree.getroot()
 	wavefunc = root[0]
+	try:
+		determinantset = wavefunc[0]
+		multidet = determinantset[3]
+		multidet.set("optimize","no")
+	except Exception:
+		print "This is a single determinant system"
+	else:
+		print "This is a multi determinant system"
 	
 	j2Body= wavefunc[1]
 	j1Body= wavefunc[2]
