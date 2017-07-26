@@ -1,23 +1,13 @@
-def useQuantumPackageMethod(filename,nojastrow,use3Body,reopt):
+def useQuantumPackageMethod(filename):
 	'''
 	 The function that will take the dump file from quantum package
-		 and generate the needed files to run QMC with qmcpack
+		 and  returns the needed information to the main function
 	'''
-	import os,sys
+	import sys
 
 	readEl=False
 	elementList=[]
 	numDetMatch = "Number of determinants"
-	dirName =""
-	flags=""
-	if nojastrow:
-		dirName=dirName+"NoJastrow_"
-		flags = flags+ "-nojastrow "
-	elif use3Body:
-		dirName=dirName+"Jastrow123_"
-		flags = flags+"-add3BodyJ "
-	else:
-		dirName=dirName+"Jastrow12_"
 	with open(filename, "r") as fileIn:
 		for line in fileIn:
 			if  numDetMatch in line:
@@ -43,101 +33,45 @@ def useQuantumPackageMethod(filename,nojastrow,use3Body,reopt):
 				newEl =line.split(" ")[0]
 				if newEl not in elementList:
 					elementList.append(str(newEl))
-	print "We have received all needed info"
-
-	print "do_psuedo = ",doPseudo
-
-
 
 	if convertType !="QP":
 		print "There is an error: Are you sure this was generated with quantum package?"
     		sys.exit(1)
 
 	else:
-		print "The file is from quantum package"
-		
-	#print numDet
-	#print convertType
-	#print doPseudo
-	#print multidet
-
+		print "The file is from quantum package\n All needed info has been obtained"
 
 	fileroot = filename.split('.')[0]
-	#print fileroot
+	
+	return [elementList,numDet,convertType,doPseudo,multidet,fileroot]
 
-	if not(doPseudo):
-		flags = flags +"-addCusp "
-
-	if multidet:
-		dirName = dirName +"MultiDet"
-	else:
-		dirName = dirName +"1Det"
-	if reopt:
-		dirName = dirName + "_reopt"
+	print "All info from quantum package file has been found"
+'''
+def useOtherMethod(filename):
+	#A template definition for adding additional methods
+	import sys
 
 	
-	os.mkdir(dirName)
-	local_fileroot = dirName +"/"+fileroot
-	print "The input files will be place in ",dirName
+	## read in the file
+	with open(filename, "r") as fileIn:
+		for line in fileIn:	
+			# get the info
+			elementList=[]# the elements in the system (none repeated)
+			numDet=1#the number of determinants 
+			convertType="MethodNameForQmcpackConverter"# for use in convert4qmc
+			doPseudo=True # determine from file and not user input			
+			multidet=False # determine from file or numDet
+	
+	if convertType !="MethodNameForQmcpackConverter":
+		print "There is an error: Are you sure this was generated with the other method?"
+    		sys.exit(1)
 
-	#os.system("./misc/converter_independent.py "+convertType+" "+ filename+" "+ local_fileroot+" "+ flags)
-	import converter_independent
-	print "Beginning conversion"
-	converter_independent.do_conversion(convertType,filename,local_fileroot,flags)
-	print "Finished Conversion"
-
-	absfileroot = os.getcwd() + "/"+dirName + "/"+ fileroot
-
-
-	for trypath in sys.path:
-		if os.path.exists(trypath+"generateCutoffDirs4QMC.py"):
-			filePath = trypath
-			break
-
-	### the files should be in one of these two paths which we appended 
-	### so that we could find the files when we executed them outside the
-	### directory containing them 
-	trypath1 = sys.path[0]
-	trypath2 = sys.path[1]
-	if multidet:
-		print "Multi reference system"
-		### this will call another program which will generate
-		### cutoff directories containing 
-		### optimization and DMC folders
-		import generateCutoffDirs4QMC
-		generateCutoffDirs4QMC.generateCutoff(dirName,absfileroot,fileroot,doPseudo,elementList,filePath)
-		'''
-		for trypath in sys.path:
-			if os.path.exists(trypath+"generateCutoffDirs4QMC.py"):
-				os.system(trypath+"generateCutoffDirs4QMC.py " + str(dirName) + " " + str(absfileroot) + " "+
-						 str(fileroot) + "  " +str(doPseudo) + " " +str(elementList)+" " +str(trypath))
-				
-				print "File executed"
-				filePath = trypath
-				break
-		'''
+	else:
+		print "The file is from the other method\n All needed info has been obtained"
 		
-	else:
-		print "Single reference system"
-		### generate the DMC and Optimization folders
-		'''
-		for trypath in sys.path:
-			if os.path.exists(trypath+"setupDMCFolder.py") and os.path.exists(trypath+"setupOptFolder.py"):
-				os.system(trypath+"setupDMCFolder.py " + str(dirName) + " " + str(absfileroot) + " " + str(absfileroot)+" "+
-						 str(fileroot) + "  " +str(doPseudo) + " " +str(elementList)+" " +str(trypath))
-				os.system(trypath+"setupOptFolder.py "+ str(dirName) + " " + str(absfileroot) + " " + str(absfileroot)+" "+
-						 str(fileroot) + "  " +str(doPseudo) + " " +str(elementList)+" " +str(trypath))
-				filePath = trypath
-				break
-		'''
-		import setupDMCFolder
-		setupDMCFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
-		import setupOptFolder
-		setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
-	if not(doPseudo):
-		#os.system("./misc/setupCuspCorrection.py "+dirName+ " " + absfileroot+" " +multidet)
-		print "This is an all electron calculation so the Cusp correction is being added"
-		import setupCuspCorrection 
-		setupCuspCorrection.generate_CuspDir(dirName,absfileroot,multidet,filePath)
-	
-	print "setupMethod.py is done"
+	fileroot = filename.split('.')[0]
+	return [elementList,numDet,convertType,doPseudo,multidet,fileroot]
+
+	print "All info from the file has been found"
+'''
+
