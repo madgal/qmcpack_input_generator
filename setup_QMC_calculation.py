@@ -111,9 +111,8 @@ def main():
 
 
 	#os.system("./misc/converter_independent.py "+convertType+" "+ filename+" "+ local_fileroot+" "+ flags)
-	import converter_independent
 	print "Beginning conversion"
-	converter_independent.do_conversion(convertType,filename,local_fileroot,flags)
+	do_conversion(convertType,filename,local_fileroot,flags)
 	print "Finished Conversion"
 
 	
@@ -136,8 +135,6 @@ def main():
 	### the files should be in one of these two paths which we appended 
 	### so that we could find the files when we executed them outside the
 	### directory containing them 
-	trypath1 = sys.path[0]
-	trypath2 = sys.path[1]
 	if multidet:
 		print "Multi reference system"
 		### this will call another program which will generate
@@ -157,6 +154,16 @@ def main():
 		os.chdir(ogDir)
 		#import setupOptFolder
 		#setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
+def do_conversion(method,dumpfile,filename,flags):
+	import os 
+	#BINDIR ="/soft/applications/qmcpack/github/build_Intel_real/bin"
+	BINDIR ="~/qmcpack-3.0.0/build/bin"
+
+	os.system(BINDIR+"/convert4qmc -"+method+" "+dumpfile +" "+ flags )
+	os.rename("sample.Gaussian-G2.xml",filename+".wfs.xml")
+	os.rename("sample.Gaussian-G2.ptcl.xml",filename+".ptcl.xml")
+
+	
 
 def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePath):
 	
@@ -225,7 +232,6 @@ def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePat
 		
 def generateCutoff(thisDir,absfileroot,fileroot,pseudoDir,elementList,filePath):
 	import os
-	import modify_multiDet_wfs4cutoff 
 	cutoffs = [0.01,0.008,0.006,0.004,0.002,0.0009,0.0007,0.0005,0.0003,0.0001,0.00008,0.00006,0.00004]
 
 	for value in cutoffs:
