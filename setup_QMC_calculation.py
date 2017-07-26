@@ -150,8 +150,10 @@ def main():
 	if not(doPseudo):
 		#os.system("./misc/setupCuspCorrection.py "+dirName+ " " + absfileroot+" " +multidet)
 		print "This is an all electron calculation so the Cusp correction is being added"
-		import setupCuspCorrection 
-		setupCuspCorrection.generate_CuspDir(dirName,absfileroot,multidet,filePath)
+		ogDir = os.getcwd()
+		os.chdir(dirName)
+		generate_CuspDir(absfileroot,absfileroot,filePath,multidet):
+		os.chdir(ogDir)
 
 def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePath):
 	
@@ -239,6 +241,52 @@ def generateCutoff(thisDir,absfileroot,fileroot,pseudoDir,elementList,filePath):
 		createStepFolder(absfileroot,abs_wfsfile,pseudoDir,elementList,"DMC",filePath)
 		createStepFolder(absfileroot,abs_wfsfile,pseudoDir,elementList,"Opt",filePath)
 		os.chdir(ogDir)
+def generate_CuspDir(ptclfileroot,wfsfileroot,filePath,multidet):
+	### following can be undone to revert to executable
+	import os
+	import lxml
+	from lxml import etree
+
+	thisDir = "/CuspCorrection"
+	if not(os.path.isdir(thisDir)):
+		os.mkdir(thisDir)
+	os.system("cp " + filePath + "misc/Cusp.xml " +thisDir)
+
+	myFile = thisDir+"/Cusp.xml"
+	tree = etree.parse(myFile)
+	## Modify Cusp.xml for your system
+
+	root = tree.getroot()
+	project = root[0]
+	icld_ptcl = root[2]
+	icld_wfs = root[3]
+
+	project.set("id",fileroot)
+
+	ptclFile = ptclfileroot+".ptcl.xml"
+	wfsFile =  wfsfileroot+".wfs.xml"
+	icld_ptcl.set("href",ptclFile)
+	icld_wfs.set("href",wfsFile)
+
+	###### NOW WRITE THE MODIFICATIONS TO A FILE
+	tmpfile = myFile+".tmp"
+	f = open( tmpfile,"w")
+	f.write("<?xml version=\"1.0\"?>\n")
+	f.write(etree.tostring(root,pretty_print=True))
+	f.close()
+
+	os.system("mv " + tmpfile + " " + myFile)
+
+
+	if multiDet:
+	    fileName = "modify_wfs_4_Cusp_multi.py"
+	else:
+	    fileName = "modify_wfs_4_Cusp_single.py"
+	
+	os.system("cp "+filePath +"misc/"+fileName+" "+thisDir+"/modify_wfs_4_Cusp.py")
+	
+	os.system("cp "+filePath +"misc/cusp.sh " +thisDir + "/cusp.sh") 
+	
 
 #### Now call the main function to generate everything
 main()
