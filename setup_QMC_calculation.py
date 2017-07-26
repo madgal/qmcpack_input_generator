@@ -11,6 +11,7 @@ Usage:
 			--method=<QP>
 			[--noJastrow=<True,False>]
 			[--3BodyJ=<True,False>]
+			[--reoptimizeCoeffs=<True,False>]
 
 Example of use:
 	./setup_QMC_calculation.py setup  --filename=qp_dumpfilename --method=QP --reoptimizeCoeffs=True
@@ -115,13 +116,22 @@ def main():
 	converter_independent.do_conversion(convertType,filename,local_fileroot,flags)
 	print "Finished Conversion"
 
+	
+	### get a few needed variables for the setup
 	absfileroot = os.getcwd() + "/"+dirName + "/"+ fileroot
-
-
 	for trypath in sys.path:
 		if os.path.exists(trypath+"setup_QMC_calculation.py"):
 			filePath = trypath
 			break
+
+
+	if not(doPseudo):
+		print "This is an all electron calculation so the Cusp correction is being added"
+		ogDir = os.getcwd()
+		os.chdir(dirName)
+		generate_CuspDir(absfileroot,absfileroot,filePath,multidet)
+		os.chdir(ogDir)
+
 
 	### the files should be in one of these two paths which we appended 
 	### so that we could find the files when we executed them outside the
@@ -147,13 +157,6 @@ def main():
 		os.chdir(ogDir)
 		#import setupOptFolder
 		#setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
-	if not(doPseudo):
-		#os.system("./misc/setupCuspCorrection.py "+dirName+ " " + absfileroot+" " +multidet)
-		print "This is an all electron calculation so the Cusp correction is being added"
-		ogDir = os.getcwd()
-		os.chdir(dirName)
-		generate_CuspDir(absfileroot,absfileroot,filePath,multidet):
-		os.chdir(ogDir)
 
 def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePath):
 	
@@ -247,7 +250,7 @@ def generate_CuspDir(ptclfileroot,wfsfileroot,filePath,multidet):
 	import lxml
 	from lxml import etree
 
-	thisDir = "/CuspCorrection"
+	thisDir = "CuspCorrection"
 	if not(os.path.isdir(thisDir)):
 		os.mkdir(thisDir)
 	os.system("cp " + filePath + "misc/Cusp.xml " +thisDir)
@@ -261,7 +264,7 @@ def generate_CuspDir(ptclfileroot,wfsfileroot,filePath,multidet):
 	icld_ptcl = root[2]
 	icld_wfs = root[3]
 
-	project.set("id",fileroot)
+	project.set("id",ptclfileroot.split("/")[-1])
 
 	ptclFile = ptclfileroot+".ptcl.xml"
 	wfsFile =  wfsfileroot+".wfs.xml"
@@ -277,15 +280,51 @@ def generate_CuspDir(ptclfileroot,wfsfileroot,filePath,multidet):
 
 	os.system("mv " + tmpfile + " " + myFile)
 
+	modify_wfs(wfsFile,"Cusp",multidet)
 
-	if multiDet:
-	    fileName = "modify_wfs_4_Cusp_multi.py"
-	else:
-	    fileName = "modify_wfs_4_Cusp_single.py"
-	
-	os.system("cp "+filePath +"misc/"+fileName+" "+thisDir+"/modify_wfs_4_Cusp.py")
-	
 	os.system("cp "+filePath +"misc/cusp.sh " +thisDir + "/cusp.sh") 
+
+def modify_wfs(myfile,modType,multi,cutoff=0.01):
+	import os 
+	import lxml
+	from lxml import etree
+
+	if modType=="Cusp":	
+
+		os.system("cp "+myfile+" " + myfile+"_initial")
+
+		tree= etree.parse(myfile)
+		root = tree.getroot()
+		wavefunc = root[0]
+		determinantset = wavefunc[0]
+		fulldir=os.getcwd()
+
+		if multi:
+			sposet_up = determinantset[1]
+			sposet_dn = determinantset[2]
+			MyCuspUp=fulldir+"/CuspCorrection/spo-up.cuspInfo.xml"
+			sposet_up.set("cuspInfo",MyCuspUp)
+			MyCuspDn=fulldir+"/CuspCorrection/spo-dn.cuspInfo.xml"
+			sposet_dn.set("cuspInfo",MyCuspDn)
+
+		else:
+			up_det =  determinantset[1][0]
+			dn_det = determinantset[1][1]
+			MyCuspUp =fulldir+"/CuspCorrection/updet.cuspInfo.xml"
+			up_det.set("cuspInfo",MyCuspUp)
+			MyCuspDn =fulldir+"/CuspCorrection/downdet.cuspInfo.xml"
+			dn_det.set("cuspInfo",MyCuspDn)
+
+	
+		###### NOW WRITE THE MODIFICATIONS TO A FILE
+		tmpfile = myfile+".tmp"
+		f = open( tmpfile,"w")
+		f.write("<?xml version=\"1.0\"?>\n")
+		f.write(etree.tostring(root,pretty_print=True))
+		f.close()
+		
+		os.system("mv " + tmpfile + " " + myfile)
+
 	
 
 #### Now call the main function to generate everything
