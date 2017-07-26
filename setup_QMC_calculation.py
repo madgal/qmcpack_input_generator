@@ -38,7 +38,7 @@ except:
     print "File is corupted. Git reset may fix the issues"
     sys.exit(1)
 
-if __name__ == '__main__':
+def main():
 
     arguments = docopt(__doc__, version='G2 Api ' + version)
 
@@ -87,9 +87,6 @@ if __name__ == '__main__':
 	else:
 		dirName=dirName+"Jastrow12_"
 
-	if not(doPseudo):
-		flags = flags +"-addCusp "
-
 	if multidet:
 		dirName = dirName +"MultiDet"
 	else:
@@ -102,6 +99,16 @@ if __name__ == '__main__':
 		os.mkdir(dirName)
 	local_fileroot = dirName +"/"+fileroot
 	print "The input files will be place in ",dirName
+
+	if doPseudo:
+	    for el in elementList:
+			#os.system("cp /soft/applications/qmcpack/pseudopotentials/BFD/"+el + ".BFD.xml " + outerDir)
+			pseudoDir=dirName
+			os.system("cp ~/qmcpack-3.0.0/pseudopotentials/BFD/"+el + ".BFD.xml " + pseudoDir)
+	else:
+		pseudoDir=False
+		flags = flags +"-addCusp "
+
 
 	#os.system("./misc/converter_independent.py "+convertType+" "+ filename+" "+ local_fileroot+" "+ flags)
 	import converter_independent
@@ -133,13 +140,86 @@ if __name__ == '__main__':
 	else:
 		print "Single reference system"
 		### generate the DMC and Optimization folders
-		import setupDMCFolder
-		setupDMCFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
-		import setupOptFolder
-		setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
+		#import setupDMCFolder
+		#setupDMCFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
+		ogDir = os.getcwd()
+		os.chdir(dirName)
+		modifyHamiltonian(absfileroot,absfileroot,pseudoDir,elementList,"DMC",filePath)
+		modifyHamiltonian(absfileroot,absfileroot,pseudoDir,elementList,"Opt",filePath)
+		os.chdir(ogDir)
+		#import setupOptFolder
+		#setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
 	if not(doPseudo):
 		#os.system("./misc/setupCuspCorrection.py "+dirName+ " " + absfileroot+" " +multidet)
 		print "This is an all electron calculation so the Cusp correction is being added"
 		import setupCuspCorrection 
 		setupCuspCorrection.generate_CuspDir(dirName,absfileroot,multidet,filePath)
+
+def modifyHamiltonian(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePath):
+	
+	import os
+	################################################
+	#### Generate : DMC.xml
+	################################################
+	import lxml
+	from lxml import etree
+
+	if pseudoDir:
+	    template_Name = step+"_PP.xml"
+	else:
+	    template_Name = step+"_AE.xml"
+	    
+	this_dir = step
+	if not(os.path.isdir(this_dir)):
+	    os.mkdir(this_dir)
+	os.system("cp " + filePath + "misc/"+template_Name+" " +this_dir+"/"+step+".xml")
+	
+	
+	myFile = this_dir+"/"+step+".xml"
+	tree = etree.parse(myFile)
+	root = tree.getroot()
+	
+	project = root[0]
+	icld_ptcl = root[2]
+	icld_wfs = root[3]
+	
+	if pseudoDir:
+		hamilt   = root[5] 
+		pairPot1 = hamilt[0]
+	
+		count=0
+		for el in elementList:
+			pairPot1.append(etree.Element("pseudo"))
+        		pseudo = pairPot1[count]
+			pseudo.set("elementType",el)
+			el_path = os.path.abspath(pseudoDir+ "/"+el+".BFD.xml")
+	
+			pseudo.set("href",el_path)
+			count+=1
+
+	## get the rootname to use as the project id
+	filename = ptclfileroot.split("/")[-1]
+	filename = filename.split(".")[0]
 		
+	projName = step+"-"+filename
+	project.set("id",projName)
+	
+	ptclFile = ptclfileroot+".ptcl.xml"
+	wfsFile =  wfsfileroot +".wfs.xml"
+	icld_ptcl.set("href",ptclFile)
+	icld_wfs.set("href",wfsFile)
+	
+	###### NOW WRITE THE MODIFICATIONS TO A FILE
+	tmpfile = myFile+".tmp"
+	f = open( tmpfile,"w")
+	f.write("<?xml version=\"1.0\"?>\n")
+	f.write(etree.tostring(root,pretty_print=True))
+	f.close()
+	
+	os.system("mv " + tmpfile + " " + myFile)
+	
+	os.system("cp " +filePath + "misc/bgq-"+step+".sh "+this_dir)
+		
+
+#### Now call the main function to generate everything
+main()
