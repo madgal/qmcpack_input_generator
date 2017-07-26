@@ -107,14 +107,3 @@ def makeFolder(outerDir,ptclfileroot,wfsfileroot,filename,usepp,elementList,file
 		### Generate bgq-DMC.sh
         	################################################
 		os.system("cp " + filePath + "misc/bgq-Opt.sh "+outerDir+"/Optimization/")
-	
-		os.system("cp " + filePath + "misc/optimize_1Body2Body.py "+Opt_dir)
-		    
-		if reopt:
-			os.system("cp " + filePath + "misc/optimize_and_include_coeffs.py "+Opt_dir)
-	
-		if "3" in  Jtype:
-			os.system("cp " + filePath + "misc/optimize_and_include_3Body.py "+Opt_dir)
-	
-		os.system("cp " + filePath + "misc/finish_optimization_and_setup_wfs_4_DMC.py "+Opt_dir)
-	

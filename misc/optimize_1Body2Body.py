@@ -28,10 +28,15 @@ try:
             corr.set("rcut","10")
 	for corr in j1Body:
             corr.set("rcut","5")
-        j3Body= wavefunc[3]
-	for corr in j3Body:
-	    corr.set("rcut","3")
-            corr[0].set("optimize","no")
+	try:
+	        j3Body= wavefunc[3]
+		for corr in j3Body:
+		    corr.set("rcut","3")
+        	    corr[0].set("optimize","no")
+	except Exception:
+		print "Only 1 and 2 body Jastrows"
+	else:
+		print "1, 2, and 3 body Jastrows"
 	
 	###### NOW WRITE THE MODIFICATIONS TO A FILE
 	tmpfile = myfile+".tmp"
