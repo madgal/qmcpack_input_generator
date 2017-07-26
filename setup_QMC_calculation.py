@@ -11,7 +11,6 @@ Usage:
 			--method=<QP>
 			[--noJastrow=<True,False>]
 			[--3BodyJ=<True,False>]
-			[--reoptimizeCoeffs=<True,False>]
 
 Example of use:
 	./setup_QMC_calculation.py setup  --filename=qp_dumpfilename --method=QP --reoptimizeCoeffs=True
@@ -59,7 +58,7 @@ def main():
 	if arguments["--3BodyJ"]:
 		use3Body = arguments["--3BodyJ"]=="True"
 	else:
-		use3Body = True
+		use3Body = False
 	if arguments["--reoptimizeCoeffs"]:
 		reopt = arguments["--reoptimizeCoeffs"]=="True"
 	else:
@@ -102,8 +101,8 @@ def main():
 
 	if doPseudo:
 	    for el in elementList:
-			#os.system("cp /soft/applications/qmcpack/pseudopotentials/BFD/"+el + ".BFD.xml " + outerDir)
 			pseudoDir=dirName
+			#os.system("cp /soft/applications/qmcpack/pseudopotentials/BFD/"+el + ".BFD.xml " + pseudoDir)
 			os.system("cp ~/qmcpack-3.0.0/pseudopotentials/BFD/"+el + ".BFD.xml " + pseudoDir)
 	else:
 		pseudoDir=False
@@ -120,7 +119,7 @@ def main():
 
 
 	for trypath in sys.path:
-		if os.path.exists(trypath+"generateCutoffDirs4QMC.py"):
+		if os.path.exists(trypath+"setup_QMC_calculation.py"):
 			filePath = trypath
 			break
 

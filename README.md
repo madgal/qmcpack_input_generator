@@ -11,7 +11,7 @@ Takes a file from quantum package that is ready for conversion (i.e. save_for_qm
                     Filename: the file that is ready for conversion to qmcpack
                     Method: at the moment only quantum package input can be used, but it would be relatively easy to modify the setupMethods.py file if another input is desired.
                     --noJastrow= default is false. Set to true if you do NOT want 1,2, or 3 body jastrow
-                    --3BodyJ   =default is True. Set to false if you only want 1 and 2 body Jastrows.
+                    --3BodyJ   =default is False. Set to false if you only want 1 and 2 body Jastrows.
                     --reoptimizeCoeffs = default is False. Set to true if you want to reoptimize multideterminant coefficients
                  
 ### Output 
