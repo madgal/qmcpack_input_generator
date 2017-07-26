@@ -236,9 +236,12 @@ def generateCutoff(thisDir,absfileroot,fileroot,pseudoDir,elementList,filePath):
 		wfs_fileroot = fileroot+"_"+str(value)
 
 
-		modify_multiDet_wfs4cutoff.modify_wfs_4_cutoff(cutoffDir,thisDir,fileroot,wfs_fileroot,value)
+		wfsFilename=wfs_fileroot+".wfs.xml"
+		wfsFilename = os.path.abspath(cutoffDir + "/"+wfsFilename)
+		os.system("cp "+absfileroot+".wfs.xml " + wfsFilename)
+		modify_wfs(wfsFilename,"Cutoff",True,value)
 
-		abs_wfsfile = absfileroot + "_"+str(value)
+		abs_wfsfile = wfsFilename
 		ogDir = os.getcwd()
 		os.chdir(cutoffDir)
 		createStepFolder(absfileroot,abs_wfsfile,pseudoDir,elementList,"DMC",filePath)
@@ -325,7 +328,47 @@ def modify_wfs(myfile,modType,multi,cutoff=0.01):
 		
 		os.system("mv " + tmpfile + " " + myfile)
 
-	
+	elif modType=="Cutoff":
+		match = "<ci id="
+	        match =match.replace(" ","")
+        	qc_match = "qc_coeff="
+
+	        tmpFilenam = myfile +".tmp"
+                tmpFile = open(tmpFilenam,"w")
+        	dets=0
+        	with open (myfile,"r") as fileIn:
+                        for row in fileIn:
+                	        line = row.replace(" ","")
+                	        if line[0:3] ==match[0:3]:
+                                        line = row.split(" ")
+                        	        for el in line:
+                        	                if el[0:8] == qc_match[0:8]:
+                                                        if abs(float(el[10:-1])) >= cutoff:
+                                	                        tmpFile.write(row)
+                                	                        dets+=1
+                                                        break
+
+	                        else:
+	                                tmpFile.write(row)
+        
+        	tmpFile.close()
+        	os.system("mv " + tmpFilenam + " " +myfile)
+                
+
+                tree = etree.parse(myfile)
+                root = tree.getroot()
+                wavefunc = root[0]
+                determinantset = wavefunc[0]
+                multidet = determinantset[3]
+                multidet[0].set("size",str(dets))
+                multidet[0].set("cutoff",str(cutoff))
+
+                f = open(tmpFilenam,"w")
+                f.write("<?xml version=\"1.0\"?>\n")
+                f.write(etree.tostring(root,pretty_print=True))
+                f.close()
+
+        	os.system("mv " + tmpFilenam + " " +myfile)	
 
 #### Now call the main function to generate everything
 main()
