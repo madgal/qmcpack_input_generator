@@ -134,8 +134,7 @@ def main():
 		### this will call another program which will generate
 		### cutoff directories containing 
 		### optimization and DMC folders
-		import generateCutoffDirs4QMC
-		generateCutoffDirs4QMC.generateCutoff(dirName,absfileroot,fileroot,doPseudo,elementList,filePath)
+		generateCutoff(dirName,absfileroot,fileroot,pseudoDir,elementList,filePath)
 		
 	else:
 		print "Single reference system"
@@ -220,6 +219,27 @@ def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePat
 	
 	os.system("cp " +filePath + "misc/bgq-"+step+".sh "+this_dir)
 		
+def generateCutoff(thisDir,absfileroot,fileroot,pseudoDir,elementList,filePath):
+	import os
+	import modify_multiDet_wfs4cutoff 
+	cutoffs = [0.01,0.008,0.006,0.004,0.002,0.0009,0.0007,0.0005,0.0003,0.0001,0.00008,0.00006,0.00004]
+
+	for value in cutoffs:
+
+		cutoffDir = thisDir +"/cutoff_"+str(value)
+		if not(os.path.isdir(cutoffDir)):
+			os.mkdir(cutoffDir)
+		wfs_fileroot = fileroot+"_"+str(value)
+
+
+		modify_multiDet_wfs4cutoff.modify_wfs_4_cutoff(cutoffDir,thisDir,fileroot,wfs_fileroot,value)
+
+		abs_wfsfile = absfileroot + "_"+str(value)
+		ogDir = os.getcwd()
+		os.chdir(cutoffDir)
+		createStepFolder(absfileroot,abs_wfsfile,pseudoDir,elementList,"DMC",filePath)
+		createStepFolder(absfileroot,abs_wfsfile,pseudoDir,elementList,"Opt",filePath)
+		os.chdir(ogDir)
 
 #### Now call the main function to generate everything
 main()
