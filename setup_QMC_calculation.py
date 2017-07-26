@@ -144,8 +144,8 @@ def main():
 		#setupDMCFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
 		ogDir = os.getcwd()
 		os.chdir(dirName)
-		modifyHamiltonian(absfileroot,absfileroot,pseudoDir,elementList,"DMC",filePath)
-		modifyHamiltonian(absfileroot,absfileroot,pseudoDir,elementList,"Opt",filePath)
+		createStepFolder(absfileroot,absfileroot,pseudoDir,elementList,"DMC",filePath)
+		createStepFolder(absfileroot,absfileroot,pseudoDir,elementList,"Opt",filePath)
 		os.chdir(ogDir)
 		#import setupOptFolder
 		#setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
@@ -155,7 +155,7 @@ def main():
 		import setupCuspCorrection 
 		setupCuspCorrection.generate_CuspDir(dirName,absfileroot,multidet,filePath)
 
-def modifyHamiltonian(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePath):
+def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePath):
 	
 	import os
 	################################################
