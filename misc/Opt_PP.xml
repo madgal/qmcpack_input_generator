@@ -13,27 +13,32 @@
   </hamiltonian>
 
 
-
- <init source="ion0" target="e"/>
-  <qmc method="vmc" move="pbyp" checkpoint="-1" gpu="yes">
+<init source="ion0" target="e"/>
+  <qmc method="vmc" move="pbyp" gpu="yes">
     <estimator name="LocalEnergy" hdf5="no"/>
     <parameter name="walkers">   1</parameter>
-    <parameter name="step">    1</parameter>
-    <parameter name="substeps">  5 </parameter>
-    <parameter name="warmupSteps">  10 </parameter>
-    <parameter name="blocks"> 50</parameter>
-    <parameter name="timestep">  0.5 </parameter>
+    <parameter name="samplesperthread">    1 </parameter>
+    <parameter name="stepsbetweensamples">    10 </parameter>
+    <parameter name="substeps">  20 </parameter>
+    <parameter name="warmupSteps">  500 </parameter>
+    <parameter name="blocks"> 10</parameter>
+    <parameter name="timestep">  0.01 </parameter>
     <parameter name="usedrift">   no </parameter>
   </qmc>
+
+
+
 
 <loop max="2">
   <qmc method="linear" move="pbyp" checkpoint="-1" gpu="yes">
-    <parameter name="blocks"> 20</parameter>
-    <parameter name="warmupSteps">  40</parameter>
-    <parameter name="substeps">  20 </parameter>
-    <parameter name="timestep">  0.5 </parameter>
+    <parameter name="blocks"> 10</parameter>
+    <parameter name="warmupSteps">  250 </parameter>
+    <parameter name="timestep">  0.01 </parameter>
     <parameter name="walkers">   1</parameter>
-    <parameter name="minwalkers">  0.001 </parameter>
+    <parameter name="samplesperthread">    1 </parameter>
+    <parameter name="stepsbetweensamples">    10 </parameter>
+    <parameter name="substeps">  20 </parameter>
+    <parameter name="minwalkers">  0.0001 </parameter>
     <parameter name="usedrift">   no </parameter>
     <estimator name="LocalEnergy" hdf5="no"/>
     <cost name="energy">                   0.9 </cost>
@@ -44,15 +49,19 @@
     <parameter name="useBuffer">no</parameter>
   </qmc>
 </loop>
-<loop max="40">
+
+<loop max="20">
   <qmc method="linear" move="pbyp" checkpoint="-1" gpu="yes">
-    <parameter name="blocks"> 40</parameter>
-    <parameter name="warmupSteps">  40</parameter>
-    <parameter name="substeps">  20 </parameter>
-    <parameter name="timestep">  0.5 </parameter>
-    <parameter name="walkers">   1</parameter>
+    <parameter name="blocks">  40 </parameter>
+    <parameter name="warmupsteps">40 </parameter>
+    <parameter name="samplesperthread">    1 </parameter>
+    <parameter name="stepsbetweensamples">    10 </parameter>
+    <parameter name="substeps"> 20   </parameter>
+    <!--parameter name="samples"> 131072    </parameter-->
+    <parameter name="timestep">  0.01  </parameter>
+    <parameter name="walkers">  1 </parameter>
     <parameter name="minwalkers">  0.5 </parameter>
-    <parameter name="usedrift">   no </parameter>
+    <parameter name="useDrift">   no </parameter>
     <estimator name="LocalEnergy" hdf5="no"/>
     <cost name="energy">                   0.9 </cost>
     <cost name="unreweightedvariance">     0.0 </cost>
@@ -60,7 +69,9 @@
     <parameter name="MinMethod">OneShiftOnly</parameter>
     <parameter name="nonlocalpp">yes</parameter>
     <parameter name="useBuffer">no</parameter>
-    <parameter name="shift_i"> 0.1</parameter>
+    <parameter name="shift_i"> 0.1 </parameter>
   </qmc>
 </loop>
+
+
 </simulation>

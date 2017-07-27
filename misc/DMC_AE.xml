@@ -13,27 +13,26 @@
 
 
  <init source="ion0" target="e"/>
-  <qmc method="vmc" move="pbyp" gpu="yes">
+<qmc method="vmc" move="pbyp" gpu="yes">
     <estimator name="LocalEnergy" hdf5="no"/>
     <parameter name="walkers">   1</parameter>
     <parameter name="samplesperthread">    1 </parameter>
     <parameter name="stepsbetweensamples">    10 </parameter>
     <parameter name="substeps">  30 </parameter>
-    <parameter name="warmupSteps"> 100 </parameter>
-    <parameter name="blocks"> 10</parameter>
-    <parameter name="timestep">  0.5 </parameter>
+    <parameter name="warmupSteps"> 40 </parameter>
+    <parameter name="blocks"> 50</parameter>
+    <parameter name="timestep">  0.1 </parameter>
     <parameter name="usedrift">   no </parameter>
   </qmc>
 
-
-  <qmc method="dmc" move="pbyp" checkpoint="-1" gpu="yes">
+  <qmc method="dmc" move="pbyp" checkpoint="20" gpu="yes">
     <estimator name="LocalEnergy" hdf5="no"/>
-    <parameter name="targetwalkers">4000</parameter>
+    <parameter name="targetwalkers">65036</parameter>
     <parameter name="reconfiguration">   no </parameter>
     <parameter name="warmupSteps">  50 </parameter>
     <parameter name="timestep">  0.001 </parameter>
     <parameter name="steps">   30 </parameter>
-    <parameter name="blocks">  200</parameter>
+    <parameter name="blocks">  3000</parameter>
     <parameter name="nonlocalmoves">  yes </parameter>
   </qmc>
 </simulation>
