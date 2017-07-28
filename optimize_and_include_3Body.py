@@ -52,7 +52,7 @@ try:
 				prevEnergies.append(float(row[1]))
 		
 
-	if( np.mean(energies) < np.mean(prevEnergies)):
+	if(initialSeries!=1 and (np.mean(energies) < np.mean(prevEnergies))):
 	
 		### Then the coefficients are probably optimized
 		index = energies.index(min(energies))
@@ -79,9 +79,9 @@ try:
 	#else:
 	#resubmit the optimization without changing initial file
 	
-
- 
 except Exception:
 	print "Please check filenames and existence of files" 
+
+ 
 else:
 	print "Check and submit Optimization of coefficients with 1 and 2 body Jastrows"
