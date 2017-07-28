@@ -228,7 +228,7 @@ def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePat
 	
 	os.system("mv " + tmpfile + " " + myFile)
 	
-	os.system("cp " +filePath + "misc/bgq-"+step+".sh "+this_dir)
+	#os.system("cp " +filePath + "misc/bgq-"+step+".sh "+this_dir)
 		
 def generateCutoff(thisDir,absfileroot,fileroot,pseudoDir,elementList,filePath):
 	import os

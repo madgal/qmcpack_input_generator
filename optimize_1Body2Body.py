@@ -50,6 +50,5 @@ try:
 except Exception:
 	print "Please check filenames and existence of files" 
 else:
-	print "Submitting Optimization of 1 and 2 body Jastrows"
-        os.system("./bgq-Opt.sh")
+	print "Check and submit Optimization of 1 and 2 body Jastrows"
 	
