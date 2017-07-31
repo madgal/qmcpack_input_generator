@@ -10,27 +10,33 @@ try:
         fileroot = sys.argv[1] 
 
 	print "The wavefunction used is \"../%s.wfs.xml\"\n" %fileroot
-	print "The optimization files are \"Opt-%s.*\"" %fileroot
 
         myfile ="../"+fileroot+".wfs.xml"
 	os.system("cp "+ myfile +" " +myfile + "_12Opt")
 
-	os.system("OptProgress.pl *scalar.dat > opt_1b2b.dat")
+	#os.system("OptProgress.pl *scalar.dat > opt_1b2b.dat")
+	os.system("qmca -q ev *scalar.dat > opt_1b2b.dat")
 
 
 	series=[]
 	energies=[]
+	collectDat=False
 	with open("opt_1b2b.dat","r") as fileIn:
 		for row in fileIn:
-			row = row.split("  ")
-			series.append(row[0])
-			energies.append(float(row[1]))
-		
+			if collectDat:
+				row = row.split("  ")
+				serNum = int(row[1].split(" ")[1])
+				series.append("%03d" %serNum)
+				energies.append(float(row[2].split(" ")[0]))
+			elif "LocalEnergy" in row:
+				collectDat=True
+
 	
 	index = energies.index(min(energies))
 	print series[index]
 
-	os.system("cp Opt-"+fileroot+".s"+series[index]+".opt.xml "+myfile)
+	Optfileroot = row[0]+".s"
+	os.system("cp " + Optfileroot+series[index]+".opt.xml "+myfile)
 
 	tree= etree.parse(myfile)
 	root = tree.getroot()
@@ -48,7 +54,7 @@ try:
 	os.system("mv " + tmpfile + " " + myfile)
 
 	### get where the series should restart
-	match = "Opt-"+fileroot + "*opt.xml"
+	match = "Opt-*opt.xml"
 	seriesNum = []
         for filename in glob(match):
                 seriesNum.append(int(filename[-11:-8]))
