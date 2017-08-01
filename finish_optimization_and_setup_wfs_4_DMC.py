@@ -35,3 +35,15 @@ with open("opt_3b.dat","r") as fileIn:
 index = energies.index(min(energies))
 print series[index]
 os.system("cp Opt-"+fileroot +".s"+series[index]+".opt.xml "+myfile)
+tree= etree.parse(myfile)
+root = tree.getroot()
+tmpfile = myfile+".tmp"
+f = open( tmpfile,"w")
+f.write("<?xml version=\"1.0\"?>\n")
+f.write("<!-- s%03d -->\n" %serNum)
+f.write(etree.tostring(root,pretty_print=True))
+f.close()
+
+os.system("mv " + tmpfile + " " + myfile)
+	
+
