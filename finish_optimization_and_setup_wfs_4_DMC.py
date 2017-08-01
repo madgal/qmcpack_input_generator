@@ -48,7 +48,7 @@ root = tree.getroot()
 tmpfile = myfile+".tmp"
 f = open( tmpfile,"w")
 f.write("<?xml version=\"1.0\"?>\n")
-f.write("<!-- s%03d -->\n" %series[index])
+f.write("<!-- s%s -->\n" %series[index])
 f.write(etree.tostring(root,pretty_print=True))
 f.close()
 
