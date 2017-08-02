@@ -25,27 +25,36 @@ def useQuantumPackageMethod(filename):
 				multidet=line[1][0].lower()=="t"
 			elif "Atomic coord in Bohr" in line:
 				readEl=True
-        
 			elif readEl and ("BEGIN_BASIS_SET" in line):
+				## we have finished reading in the element list 
+				## and all other needed information
 				break
-        
 			elif readEl:
+				## add all elements so that there are no repeated elements
+				## this is needed if there is a pseudopotential
 				newEl =line.split(" ")[0]
 				if newEl not in elementList:
 					elementList.append(str(newEl))
 
+	## Do a couple checks that should return false and allow the qmcpack file to finish
 	if convertType !="QP":
 		print "There is an error: Are you sure this was generated with quantum package?"
     		sys.exit(1)
 
+	elif (multi_det and numDet==1) or ( numDet > 1 and not(multi_det)):
+		print "There was an error: The number of determinants does not match with the multi/single reference system"
+		sys.exit(1)
 	else:
 		print "The file is from quantum package\n All needed info has been obtained"
+
 
 	fileroot = filename.split('.')[0]
 	
 	return [elementList,numDet,convertType,doPseudo,multidet,fileroot]
 
-	print "All info from quantum package file has been found"
+	print "All info from the quantum package file has been found"
+
+###################################################################3
 '''
 def useOtherMethod(filename):
 	#A template definition for adding additional methods
@@ -65,6 +74,10 @@ def useOtherMethod(filename):
 	if convertType !="MethodNameForQmcpackConverter":
 		print "There is an error: Are you sure this was generated with the other method?"
     		sys.exit(1)
+
+	elif otherCheck:
+		print "There is an error: Check this ..."
+		sys.exit(1)
 
 	else:
 		print "The file is from the other method\n All needed info has been obtained"
