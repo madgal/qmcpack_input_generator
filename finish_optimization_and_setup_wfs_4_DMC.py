@@ -11,8 +11,8 @@ myfile ="../"+fileroot+".wfs.xml"
 os.system("cp "+myfile+" " +myfile+"_3b")
 
 
-#os.system("OptProgress.pl *scalar.dat > opt_3b.dat")
-os.system("qmca -q ev *scalar.dat > opt_3b.dat")
+#os.system("OptProgress.pl *scalar.dat > opt_final.dat")
+os.system("qmca -q ev *scalar.dat > opt_final.dat")
 
 optfile = "Opt.xml"
 tree= etree.parse(optfile)
@@ -25,7 +25,7 @@ series=[]
 energies=[]
 prevEnergies=[]
 collectDat=False
-with open("opt_3b.dat","r") as fileIn:
+with open("opt_final.dat","r") as fileIn:
 	for row in fileIn:
 		if collectDat:
 			row = row.split("  ")
