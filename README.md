@@ -16,14 +16,15 @@ Takes a file from quantum package that is ready for conversion (i.e. save_for_qm
 ### Output 
     This script can be called from the directory with the input file and generates all needed input for QMC.
     The *wfs.xml and *ptcl.xml files will be generated in a subdirectory called JASTROW_NDET(_reopt).
-    If any optimization will take place the Optimization folder will be created with the appropriate scripts inside. 
-    A DMC folder will be created with the needed files. 
+    If any optimization will take place the Optimization folder will be created with the Opt.xml file (The Opt.xml file is either misc/Opt_AE.xml or a version of misc/Opt_PP.xml with the proper pseudopotential Hamiltonian). 
+    A DMC folder will be created with the needed DMC.xml file (The DMC.xml file is either misc/DMC_AE.xml or a version of misc/DMC_PP.xml with the proper pseudopotential Hamiltonian). 
     The Hamiltonians in each are created based on whether a pseudopotential was used. 
     If it's an all-electron calculation then a Cusp Correction folder will be created.
     
     For single determinant calculations: Only main directory will be generated
-    For mulit determinant  calculations: Withint the main directory there will be cutoff directories containing the Optimization and/or DMC folders.
-   
+    For mulit determinant  calculations: Within the main directory there will be cutoff directories containing the Optimization and/or DMC folders.
+ 
+### 
    
 ### Example of use
 
