@@ -202,7 +202,7 @@ def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePat
 			pairPot1.append(etree.Element("pseudo"))
         		pseudo = pairPot1[count]
 			pseudo.set("elementType",el)
-			el_path = os.path.abspath(pseudoDir+ "/"+el+".BFD.xml")
+			el_path = os.path.abspath(el+".BFD.xml")
 	
 			pseudo.set("href",el_path)
 			count+=1
