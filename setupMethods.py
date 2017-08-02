@@ -41,7 +41,7 @@ def useQuantumPackageMethod(filename):
 		print "There is an error: Are you sure this was generated with quantum package?"
     		sys.exit(1)
 
-	elif (multi_det and numDet==1) or ( numDet > 1 and not(multi_det)):
+	elif (multidet and numDet==1) or ( numDet > 1 and not(multidet)):
 		print "There was an error: The number of determinants does not match with the multi/single reference system"
 		sys.exit(1)
 	else:
