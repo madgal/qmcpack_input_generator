@@ -9,15 +9,18 @@ try:
         from glob import glob
         fileroot = sys.argv[1] 
 
-	print "The wavefunction used is \"../%s.wfs.xml\"\n" %fileroot
-
         myfile ="../"+fileroot+".wfs.xml"
+	## Backup the wfs file
 	os.system("cp "+ myfile +" " +myfile + "_12Opt")
 
+	###################################################################################
+        ## Grab the energy  and save it for future use (i.e. getting the lowest energy wavefunction)
 	#os.system("OptProgress.pl *scalar.dat > opt_1b2b.dat")
 	os.system("qmca -q ev *scalar.dat > opt_1b2b.dat")
 
-
+	###################################################################################
+	## Get the energies and associated series number from the block we are looking at
+	## use the file we just output the data into
 	series=[]
 	energies=[]
 	collectDat=False
@@ -28,16 +31,21 @@ try:
 				serNum = int(row[1].split(" ")[1])
 				series.append("%03d" %serNum)
 				energies.append(float(row[2].split(" ")[0]))
+			#check to see if we are to the data yet
 			elif "LocalEnergy" in row:
 				collectDat=True
 
-	
+	## get the index of the lowest energy wavefunction
 	index = energies.index(min(energies))
-	print series[index]
+	print  "Series %s will be used" %series[index]
 
+	###################################################################################
+	## copy the lowest energy wavefunction to the main wavefunction file
 	Optfileroot = row[0]+".s"
 	os.system("cp " + Optfileroot+series[index]+".opt.xml "+myfile)
 
+	## change the main wavefunction file to include multideterminant optimization
+	## and add a comment tag to track which series was used
 	tree= etree.parse(myfile)
 	root = tree.getroot()
 	wavefunc = root[0]
@@ -48,11 +56,13 @@ try:
 	tmpfile = myfile+".tmp"
 	f = open( tmpfile,"w")
 	f.write("<?xml version=\"1.0\"?>\n")
+	f.write("<!-- s%s -->\n" %series[index])
 	f.write(etree.tostring(root,pretty_print=True))
 	f.close()
 
 	os.system("mv " + tmpfile + " " + myfile)
 
+	###################################################################################
 	### get where the series should restart
 	match = "Opt-*opt.xml"
 	seriesNum = []
@@ -69,7 +79,6 @@ try:
 	tmpfile = myfile+".tmp"
 	f = open( tmpfile,"w")
 	f.write("<?xml version=\"1.0\"?>\n")
-	f.write("<!-- s%s -->\n" %series[index])
 	f.write(etree.tostring(root,pretty_print=True))
 	f.close()
 
@@ -79,5 +88,5 @@ try:
 except Exception:
 	print "Please check filenames and existence of files" 
 else:
-	print "Check and submit Optimization of coefficients with 1 and 2 body Jastrows"
+	print "Check and submit Optimization including coefficient reoptimization"
  
