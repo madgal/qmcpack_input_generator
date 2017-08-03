@@ -24,14 +24,13 @@ try:
     import sys
     thispath = os.path.abspath(sys.argv[0])
     thispath = thispath.replace("setup_QMC_calculation.py","")
-    #print (thispath)
-    #print os.path.isdir(thispath)
-    #print thispath
+    ## add the paths to the system so it is easier to find the location of the needed files
     sys.path.insert(0, thispath)
     sys.path.insert(0, thispath+"misc/")
     sys.path.insert(0, thispath+"src/")
 
     import setupMethods 
+    ### docopt allows the easy argument usage
     from docopt import docopt
     version="0.0.1"
 except:
@@ -51,6 +50,7 @@ def main():
 	filename= arguments["--filename"]
 	method  = arguments["--method"]
 
+	## Default is 1 and 2 body jastrow, no reoptimization of coefficients
 	if arguments["--noJastrow"]:
 		nojastrow = arguments["--noJastrow"]=="True"
 	else:
@@ -74,16 +74,17 @@ def main():
 	[elementList,numDet,convertType,doPseudo,multidet,fileroot] = necessaryInfo
 
 	'''
-	Now we begin the conversion and building of the necessary directories
+	Now we begin the building of the necessary directories
+		and add the flags needed when using "convert4qmc"
 	'''
 	dirName =""
 	flags=""
 	if nojastrow:
 		dirName=dirName+"NoJastrow_"
-		flags = flags+ "-nojastrow "
+		flags = flags+ " -nojastrow "
 	elif use3Body:
 		dirName=dirName+"Jastrow123_"
-		flags = flags+"-add3BodyJ "
+		flags = flags+" -add3BodyJ "
 	else:
 		dirName=dirName+"Jastrow12_"
 
@@ -103,19 +104,24 @@ def main():
 	if doPseudo:
 	    for el in elementList:
 			pseudoDir=dirName
+			## retrieve the pseudopotential from the qmcpack directory so it's in xml format
 			#os.system("cp /soft/applications/qmcpack/pseudopotentials/BFD/"+el + ".BFD.xml " + pseudoDir)
 			os.system("cp ~/qmcpack-3.0.0/pseudopotentials/BFD/"+el + ".BFD.xml " + pseudoDir)
 	else:
 		pseudoDir=False
-		flags = flags +"-addCusp "
+		## if its all electron then also add the Cusp condition
+		flags = flags +" -addCusp "
 
 
-	#os.system("./misc/converter_independent.py "+convertType+" "+ filename+" "+ local_fileroot+" "+ flags)
 	print "Beginning conversion"
 	do_conversion(convertType,filename,local_fileroot,flags)
 	print "Finished Conversion"
 
 	
+
+	### the files should be in one of the paths which we appended 
+	### so that we could find the files when we executed them outside the
+	### directory containing them 
 	### get a few needed variables for the setup
 	absfileroot = os.getcwd() + "/"+dirName + "/"+ fileroot
 	for trypath in sys.path:
@@ -131,10 +137,6 @@ def main():
 		generate_CuspDir(absfileroot,absfileroot,filePath,multidet)
 		os.chdir(ogDir)
 
-
-	### the files should be in one of these two paths which we appended 
-	### so that we could find the files when we executed them outside the
-	### directory containing them 
 	if multidet:
 		print "Multi reference system"
 		### this will call another program which will generate
@@ -162,8 +164,6 @@ def do_conversion(method,dumpfile,filename,flags):
 	os.system(BINDIR+"/convert4qmc -"+method+" "+dumpfile +" "+ flags )
 	os.rename("sample.Gaussian-G2.xml",filename+".wfs.xml")
 	os.rename("sample.Gaussian-G2.ptcl.xml",filename+".ptcl.xml")
-
-	
 
 def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePath):
 	
