@@ -69,39 +69,19 @@ Takes a file from quantum package that is ready for conversion (i.e. save_for_qm
 
 # qmcpack optimizer files
 
-  ./optimize_1Body2Body.py  wfsFileroot
-          
-	  wfsFileroot: The name of the wavefunction file (not an absolute path) and is expected to be in the previous directory (i.e the wavefunction file is  "../wfsFileroot.wfs.xml")
-	  This will change all the Jastrow values to: 
-	  		J2 -> rcut=10
-			J1 -> rcut=5
-			J3 -> rcut=3, optimize="no"
-	  Also, if it is a multideterminant it sets optimize="no"
-	  
-   ./optimize_and_include_coeffs.py wfsFileroot
-   
-   	wfsFileroot: The name of the wavefunction file (not an absolute path) and is expected to be in the previous directory (i.e the wavefunction file is  "../wfsFileroot.wfs.xml" )
-		This will check that the energy has not grown (i.e. the wavefunction is being optimized correctly) 
-		If the energy is reducing, it will then make a backup of the previous wavefunction and copy the Opt-wavefunction with the lowest energy to the wfs.xml file (the energies used to determine this are output to file "opt_1b2b.dat")
-		It will update the series start in the Opt.xml file
-		And set multideterminant optimize="yes"
 
-    ./optimize_and_include_3Body.py wfsFileroot
-    
-    	wfsFileroot: The name of the wavefunction file (not an absolute path) and is expected to be in the previous directory (i.e. the wavefunction is "../wfsFileroot.wfs.xml")
-		This will check that the energy has not grown (i.e. the wavefunction is being optimized correctly)
-		If the energy is reducing, it will then make a backup of the previous wavefunction and copy the Opt-wavefunction with the lowest energy to the wfs.xml file (the energies used to determine this are output to file "opt_without3Body.dat")
-		It will update the series start in the Opt.xml file
-		And set J3 optimize="yes"
+   ./optimize_system.py --optFile optFile.xml --wfsFile wfsFile.xml --optType {}
 
-   ./finish_optimization_and_setup_wfs_4_DMC.py
+	optFile: The name of optimization file that will be used ( It should already exist in the directory)
+	wfsFile: The name of wavefunction file that will be used 
+	optType: 
+		 12 -> optimize 1 and 2 body Jastrows only
+		 RC -> include the coefficient reoptimization
+		 3B -> include the 3 body Jastrow in the optimization
+		 Fin -> check to see if the system is ready for DMC
    
-         wfsFileroot: The name of the wavefunction file (not an absolute path) and is expected to be in the previous directory (i.e. the wavefunction is "../wfsFileroot.wfs.xml")
-	 	This will check that the energy has not grown (i.e. the wavefunction is being optimized correctly)
-		If the energy is reducing, it will then make a backup of the previous wavefunction and copy the Opt-wavefunction with the lowest energy to the wfs.xml file (the energies used to determine this are output to file "opt_final.dat") 
-		Once this is finished the system is ready for a DMC run
 	
-### Notes
-	These files can be executed in the same way as the setup file by doing 
-	Also, if the system is very difficult to optimize you may want to do a quick check before submitting the optimization run to ensure the correct portions are getting optimized
-	~/qmcpack_input_generator/{put_the_filename_here}.py
+	This file checks the energies and makes a guess whether optimization is occuring based on if the previous energy is decreasing
+	( it looks at the minimum energy of the current group and if that is less than the average for the previous group it continues the optimization)
+	
+	It also outputs "opt_run_info.dat" to help keep track of which optimization type was done for which group of files
