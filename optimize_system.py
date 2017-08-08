@@ -54,7 +54,7 @@ try:
 
 	### check that the user is trying to optimize with the correct options
 	try_optType = args.optType
-	if not(try_optType=="12" or try_optType=="RC" or try_optType=="3B"):
+	if not(try_optType=="12" or try_optType=="RC" or try_optType=="3B" or try_optType=="Fin"):
 		print "Please use:\n\t 12 for only optimizing 1 and 2 body\n\t RC for including coefficient reoptimization \n\t 3B for including 3 body Jastrow optimization"
 		sys.exit(1)
 
@@ -228,14 +228,18 @@ try:
 			except Exception:
 				print "Single determinant system"
 
+			print "System is ready for ",try_optType," optimization"
 		elif try_optType =="RC":
 			multidet.set("optimize","yes")
+			print "System is ready for ",try_optType," optimization"
 		elif try_optType=="3B":
 			for corr in j3Body:
 	    			corr.set("rcut","3")
 				corr[0].set("optimize","yes")
+			print "System is ready for ",try_optType," optimization"
+		elif try_optType="Fin":
+			print "System is ready for DMC"
 			
-		print "System is ready for ",try_optType," optimization"
 	else:
 		print "Please check the energies and wavefunctions before submitting another optimization run"
 		
