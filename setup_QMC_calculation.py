@@ -291,7 +291,7 @@ def generate_CuspDir(ptclfileroot,wfsfileroot,filePath,multidet):
 
 	modify_wfs(wfsFile,"Cusp",multidet)
 
-	os.system("cp "+filePath +"misc/cusp.sh " +thisDir + "/cusp.sh") 
+	#os.system("cp "+filePath +"misc/cusp.sh " +thisDir + "/cusp.sh") 
 
 def modify_wfs(myfile,modType,multi,cutoff=0.01):
 	import os 
