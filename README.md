@@ -85,3 +85,20 @@ Takes a file from quantum package that is ready for conversion (i.e. save_for_qm
 	( it looks at the minimum energy of the current group and if that is less than the average for the previous group it continues the optimization)
 	
 	It also outputs "opt_run_info.dat" to help keep track of which optimization type was done for which group of files
+
+## What the script does internally
+	1) It goes through the input arguments and checks that a valid optimization and wavefunction file are given. It then checks that an optimization type is given.
+	2) It checks which *opt.xml files have been output and sets the restart number as the last *.opt.xml +1
+	3) It opens the optimization file and checks where the group started and then sets the series number as the restart number. It also pulls the project id for later use.
+	4) If an optimization run has been done, it sends the qmca data into "opt_energy_qmca.dat". It will then grab the energies and associated series number from that file.
+	5) If no optimization run has been done, it will generate the "opt_run_info.dat" file. If only one run has been done, it will initialize the data. If mulitple runs have been done, then it will pull information from the file (the most important is the Echeck value).
+	6) The wavefunction file is backed up, and if there has been an optimization run the best wavefunction will replace it
+	7) It looks at the wavefunction and determines which optimizations have been done ( for output to "opt_run_info.dat")
+	8) If the wavefunction needs to be modifies (i.e. the first step in optimization is needed or we are moving to the next optimization step), then it is changed based on user input (i.e. the value of optType)
+	9) If we have overwritten the wavefunction file with a series optimziation file, then we add a comment into the main wavefunction file which specifies the series number.
+	10) If the opt_run_info data exists, then it is output to the file 
+	11) Finally, if no errors occured, then the modified optimization file replaces the original optimization file and the modified wavefunction file replaces the original wavefunction file. (If an error occurs, then the modified files may exist as "Filename.ext.tmp")
+
+## output files
+	opt_energy_qmca.dat: holds the qmca output 
+	opt_run_info.dat: type of optimization, the run number (for saving wavefunction files), Echeck (used for making sure the next set of energies are decreasing),series number for start of the group
