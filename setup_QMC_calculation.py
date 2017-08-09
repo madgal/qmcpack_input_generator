@@ -26,7 +26,6 @@ try:
     thispath = thispath.replace("setup_QMC_calculation.py","")
     ## add the paths to the system so it is easier to find the location of the needed files
     sys.path.insert(0, thispath)
-    sys.path.insert(0, thispath+"misc/")
     sys.path.insert(0, thispath+"src/")
 
     import setupMethods 
@@ -174,18 +173,17 @@ def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePat
 	import lxml
 	from lxml import etree
 
-	if pseudoDir:
-	    template_Name = step+"_PP.xml"
-	else:
-	    template_Name = step+"_AE.xml"
-	    
 	this_dir = step
 	if not(os.path.isdir(this_dir)):
 	    os.mkdir(this_dir)
-	os.system("cp " + filePath + "misc/"+template_Name+" " +this_dir+"/"+step+".xml")
-	
-	
+
 	myFile = this_dir+"/"+step+".xml"
+	if step=="DMC":
+		generateDMC(pseudoDir,myFile)
+	elif step=="Opt":
+		generateOpt(pseudoDir,myFile)
+
+	
 	tree = etree.parse(myFile)
 	root = tree.getroot()
 	
@@ -229,6 +227,137 @@ def createStepFolder(ptclfileroot,wfsfileroot,pseudoDir,elementList,step,filePat
 	os.system("mv " + tmpfile + " " + myFile)
 	
 	#os.system("cp " +filePath + "misc/bgq-"+step+".sh "+this_dir)
+def generateDMC(pp,filename):
+	file = "<?xml version=\"1.0\"?>\n"
+	file = file+"<simulation>\n"
+	file = file+"  <project id=\"DMC-something\" series=\"1\"/>\n"
+	file = file+"  <!-- input from quantum package converter -->\n"
+	file = file+"  <include href=\"this.ptcl.xml\"/>\n"
+	file = file+"  <include href=\"this.wfs.xml\"/>\n"
+	file = file+"  <!--  Hamiltonian -->\n"
+	file = file+"  <hamiltonian name=\"h0\" type=\"generic\" target=\"e\">\n"
+
+	if pp:
+		file = file+"<pairpot name=\"PseudoPot\" type=\"pseudo\" source=\"ion0\" wavefunction=\"psi0\" format=\"xml\">\n"
+		file = file+" </pairpot>\n"
+	else:#ae
+		file=file+"<pairpot name=\"IonElec\" type=\"coulomb\" source=\"ion0\" target=\"e\"/>\n"
+
+	file = file+"    <constant name=\"IonIon\" type=\"coulomb\" source=\"ion0\" target=\"ion0\"/>\n"
+	file = file+"    <pairpot name=\"ElecElec\" type=\"coulomb\" source=\"e\" target=\"e\" physical=\"true\"/>\n"
+	file = file+"  </hamiltonian>\n\n"
+
+
+	file = file+" <init source=\"ion0\" target=\"e\"/>\n"
+	file = file+"<qmc method=\"vmc\" move=\"pbyp\" gpu=\"yes\">\n"
+	file = file+"    <estimator name=\"LocalEnergy\" hdf5=\"no\"/>\n"
+	file = file+"    <parameter name=\"walkers\">   1</parameter>\n"
+	file = file+"    <parameter name=\"samplesperthread\">    1 </parameter>\n"
+	file = file+"    <parameter name=\"stepsbetweensamples\">    10 </parameter>\n"
+	file = file+"    <parameter name=\"substeps\">  30 </parameter>\n"
+	file = file+"    <parameter name=\"warmupSteps\"> 40 </parameter>\n"
+	file = file+"    <parameter name=\"blocks\"> 50</parameter>\n"
+	file = file+"    <parameter name=\"timestep\">  0.1 </parameter>\n"
+	file = file+"    <parameter name=\"usedrift\">   no </parameter>\n"
+	file = file+"  </qmc>\n\n"
+
+	file = file+"  <qmc method=\"dmc\" move=\"pbyp\" checkpoint=\"20\" gpu=\"yes\">\n"
+	file = file+"    <estimator name=\"LocalEnergy\" hdf5=\"no\"/>\n"
+	file = file+"    <parameter name=\"targetwalkers\">65036</parameter>\n"
+	file = file+"    <parameter name=\"reconfiguration\">   no </parameter>\n"
+	file = file+"    <parameter name=\"warmupSteps\">  50 </parameter>\n"
+	file = file+"    <parameter name=\"timestep\">  0.001 </parameter>\n"
+	file = file+"    <parameter name=\"steps\">   30 </parameter>\n"
+	file = file+"    <parameter name=\"blocks\">  3000</parameter>\n"
+	file = file+"    <parameter name=\"nonlocalmoves\">  yes </parameter>\n"
+	file = file+"  </qmc>\n"
+	file = file+"</simulation>	\n"
+
+	with open(filename,"w") as fileOut:
+		fileOut.write(file)
+	
+def generateOpt(pp,filename):
+	file = "<?xml version=\"1.0\"?>\n"
+	file = file+"<simulation>\n"
+	file = file+"  <project id=\"Opt-something\" series=\"1\"/>\n"
+	file = file+"  <!-- input from quantum package converter -->\n"
+	file = file+"  <include href=\"this.ptcl.xml\"/>\n"
+	file = file+"  <include href=\"this.wfs.xml\"/>\n"
+	file = file+"  <!--  Hamiltonian -->\n"
+	file = file+"  <hamiltonian name=\"h0\" type=\"generic\" target=\"e\">\n"
+
+	if pp:
+		file = file+"<pairpot name=\"PseudoPot\" type=\"pseudo\" source=\"ion0\" wavefunction=\"psi0\" format=\"xml\">\n"
+		file = file+" </pairpot>\n"
+	else:#ae
+		file=file+"<pairpot name=\"IonElec\" type=\"coulomb\" source=\"ion0\" target=\"e\"/>\n"
+
+	file = file+"    <constant name=\"IonIon\" type=\"coulomb\" source=\"ion0\" target=\"ion0\"/>\n"
+	file = file+"    <pairpot name=\"ElecElec\" type=\"coulomb\" source=\"e\" target=\"e\" physical=\"true\"/>\n"
+	file = file+"  </hamiltonian>\n\n"
+
+
+
+	file = file+"<init source=\"ion0\" target=\"e\"/>\n"
+	file = file+"  <qmc method=\"vmc\" move=\"pbyp\" gpu=\"yes\">\n"
+	file = file+"    <estimator name=\"LocalEnergy\" hdf5=\"no\"/>\n"
+	file = file+"    <parameter name=\"walkers\">   1</parameter>\n"
+	file = file+"    <parameter name=\"samplesperthread\">    1 </parameter>\n"
+	file = file+"    <parameter name=\"stepsbetweensamples\">    10 </parameter>\n"
+	file = file+"    <parameter name=\"substeps\">  20 </parameter>\n"
+	file = file+"    <parameter name=\"warmupSteps\">  500 </parameter>\n"
+	file = file+"    <parameter name=\"blocks\"> 10</parameter>\n"
+	file = file+"    <parameter name=\"timestep\">  0.01 </parameter>\n"
+	file = file+"    <parameter name=\"usedrift\">   no </parameter>\n"
+	file = file+"  </qmc>\n\n"
+
+	file = file+"<loop max=\"2\">\n"
+	file = file+"  <qmc method=\"linear\" move=\"pbyp\" checkpoint=\"-1\" gpu=\"yes\">\n"
+	file = file+"    <parameter name=\"blocks\"> 10</parameter>\n"
+	file = file+"    <parameter name=\"warmupSteps\">  250 </parameter>\n"
+	file = file+"    <parameter name=\"timestep\">  0.01 </parameter>\n"
+	file = file+"    <parameter name=\"walkers\">   1</parameter>\n"
+	file = file+"    <parameter name=\"samplesperthread\">    1 </parameter>\n"
+	file = file+"    <parameter name=\"stepsbetweensamples\">    10 </parameter>\n"
+	file = file+"    <parameter name=\"substeps\">  20 </parameter>\n"
+	file = file+"    <parameter name=\"minwalkers\">  0.0001 </parameter>\n"
+	file = file+"    <parameter name=\"usedrift\">   no </parameter>\n"
+	file = file+"    <estimator name=\"LocalEnergy\" hdf5=\"no\"/>\n"
+	file = file+"    <cost name=\"energy\">                   0.9 </cost>\n"
+	file = file+"    <cost name=\"unreweightedvariance\">     0.0 </cost>\n"
+	file = file+"    <cost name=\"reweightedvariance\">       0.1 </cost>\n"
+	file = file+"    <parameter name=\"MinMethod\">OneShiftOnly</parameter>\n"
+	file = file+"    <parameter name=\"nonlocalpp\">yes</parameter>\n"
+	file = file+"    <parameter name=\"useBuffer\">no</parameter>\n"
+	file = file+"  </qmc>\n"
+	file = file+"</loop>\n\n"
+
+	file = file+"<loop max=\"20\">\n"
+	file = file+"  <qmc method=\"linear\" move=\"pbyp\" checkpoint=\"-1\" gpu=\"yes\">\n"
+	file = file+"    <parameter name=\"blocks\">  40 </parameter>\n"
+	file = file+"    <parameter name=\"warmupsteps\">40 </parameter>\n"
+	file = file+"    <parameter name=\"samplesperthread\">    1 </parameter>\n"
+	file = file+"    <parameter name=\"stepsbetweensamples\">    10 </parameter>\n"
+	file = file+"    <parameter name=\"substeps\"> 20   </parameter>\n"
+	file = file+"    <!--parameter name=\"samples\"> 131072    </parameter-->\n"
+	file = file+"    <parameter name=\"timestep\">  0.01  </parameter>\n"
+	file = file+"    <parameter name=\"walkers\">  1 </parameter>\n"
+	file = file+"    <parameter name=\"minwalkers\">  0.5 </parameter>\n"
+	file = file+"    <parameter name=\"useDrift\">   no </parameter>\n"
+	file = file+"    <estimator name=\"LocalEnergy\" hdf5=\"no\"/>\n"
+	file = file+"    <cost name=\"energy\">                   0.9 </cost>\n"
+	file = file+"    <cost name=\"unreweightedvariance\">     0.0 </cost>\n"
+	file = file+"    <cost name=\"reweightedvariance\">       0.1 </cost>\n"
+	file = file+"    <parameter name=\"MinMethod\">OneShiftOnly</parameter>\n"
+	file = file+"    <parameter name=\"nonlocalpp\">yes</parameter>\n"
+	file = file+"    <parameter name=\"useBuffer\">no</parameter>\n"
+	file = file+"    <parameter name=\"shift_i\"> 0.1 </parameter>\n"
+	file = file+"  </qmc>\n"
+	file = file+"</loop>\n\n"
+	file = file+"</simulation>\n"
+
+	with open(filename,"w") as fileOut:
+		fileOut.write(file)
 		
 def generateCutoff(thisDir,absfileroot,fileroot,pseudoDir,elementList,filePath):
 	import os
@@ -262,9 +391,40 @@ def generate_CuspDir(ptclfileroot,wfsfileroot,filePath,multidet):
 	thisDir = "CuspCorrection"
 	if not(os.path.isdir(thisDir)):
 		os.mkdir(thisDir)
-	os.system("cp " + filePath + "misc/Cusp.xml " +thisDir)
 
+	file = "<?xml version=\"1.0\"?>\n"
+	file = file+"<simulation>\n"
+	file = file+"  <project id=\"something\" series=\"1\"/>\n"
+	file = file+"  <!-- input from quantum package converter -->\n"
+	file = file+"  <include href=\"this.ptcl.xml\"/>\n"
+	file = file+"  <include href=\"this.wfs.xml\"/>\n"
+	file = file+"  <!--  Hamiltonian -->\n"
+	file = file+"  <hamiltonian name=\"h0\" type=\"generic\" target=\"e\">\n"
+ 	file = file+"   <pairpot name=\"IonElec\" type=\"coulomb\" source=\"ion0\" target=\"e\"/>\n"
+	file = file+"    <constant name=\"IonIon\" type=\"coulomb\" source=\"ion0\" target=\"ion0\"/>\n"
+	file = file+"    <pairpot name=\"ElecElec\" type=\"coulomb\" source=\"e\" target=\"e\" physical=\"true\"/>\n"
+	file = file+"  </hamiltonian>\n\n"
+
+	file = file+" <init source=\"ion0\" target=\"e\"/>\n"
+	file = file+"  <qmc method=\"vmc\" move=\"pbyp\" gpu=\"yes\">\n"
+	file = file+"    <estimator name=\"LocalEnergy\" hdf5=\"no\"/>\n"
+	file = file+"    <parameter name=\"walkers\">   1</parameter>\n"
+	file = file+"    <parameter name=\"samplesperthread\">    1 </parameter>\n"
+	file = file+"    <parameter name=\"stepsbetweensamples\">    10 </parameter>\n"
+	file = file+"    <parameter name=\"substeps\">  30 </parameter>\n"
+	file = file+"    <parameter name=\"warmupSteps\">  25 </parameter>\n"
+	file = file+"    <parameter name=\"blocks\"> 10</parameter>\n"
+	file = file+"    <parameter name=\"timestep\">  0.001 </parameter>\n"
+    	file = file+"<parameter name=\"usedrift\">   no </parameter>\n"
+	file = file+"  </qmc>\n"
+	file = file+"</simulation>\n"
+
+
+	
 	myFile = thisDir+"/Cusp.xml"
+	with open(myFile,"w") as fileOut:
+		fileOut.write(file)
+
 	tree = etree.parse(myFile)
 	## Modify Cusp.xml for your system
 
