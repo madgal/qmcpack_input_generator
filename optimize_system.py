@@ -21,6 +21,9 @@ try:
 	
 
 	### check that the optimization file exists
+	if not(args.optFile):
+		print "Error: An optimization file is needed"
+		sys.exit(1)
 	optFile = args.optFile
 	if not(optFile.endswith(".xml")):
 		if os.path.isfile(optFile +".xml"):
@@ -37,6 +40,9 @@ try:
 		print "Opt file is : %s" %optFile
 		
 	### check that the wavefunction file exists	
+	if not(args.wfsFile):
+		print "Error: A wavefunction file is needed"
+		sys.exit(1)
 	wfsFile = args.wfsFile
 	if not(wfsFile.endswith(".xml")):
 		if os.path.isfile(wfsFile +".xml"):
@@ -53,6 +59,9 @@ try:
 		print "Wavefunction file is : %s" %wfsFile
 
 	### check that the user is trying to optimize with the correct options
+	if not(args.optType):
+		print "Error: The label for the next optimization step is needed"
+		sys.exit(1)
 	try_optType = args.optType
 	if not(try_optType=="12" or try_optType=="RC" or try_optType=="3B" or try_optType=="Fin"):
 		print "Please use:\n\t 12 for only optimizing 1 and 2 body\n\t RC for including coefficient reoptimization \n\t 3B for including 3 body Jastrow optimization"
@@ -204,9 +213,9 @@ try:
 	#######################################################################
 	#### check that the system is being correctly optimized ##############
 	
-	beingOptimized = (restartSeriesNum==1) or (energies[index] <= Echeck) 
+	modifyWfsForNextStep = (restartSeriesNum==1) or (energies[index] <= Echeck) 
 
-	if beingOptimized:
+	if modifyWfsForNextStep:
 		### go to next step in optimization
 		### modify the wavefunction
 		if try_optType=="12":
@@ -237,7 +246,7 @@ try:
 	    			corr.set("rcut","3")
 				corr[0].set("optimize","yes")
 			print "System is ready for ",try_optType," optimization"
-		elif try_optType="Fin":
+		elif try_optType=="Fin":
 			print "System is ready for DMC"
 			
 	else:
@@ -273,9 +282,6 @@ try:
 		fWfs.write("<?xml version=\"1.0\"?>\n")
 		fWfs.write(etree.tostring(wfsRoot,pretty_print=True))
 		fWfs.close()
-		
-
-
 
 except Exception:
 	print "There was an error. Check the arguments and files"
