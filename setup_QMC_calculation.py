@@ -138,14 +138,14 @@ def main():
 
 	#if multidet:
 	if False:
-		print "Multi reference system"
+		#print "Multi reference system"
 		### this will call another program which will generate
 		### cutoff directories containing 
 		### optimization and DMC folders
 		generateCutoff(dirName,absfileroot,fileroot,pseudoDir,elementList,filePath)
 		
 	else:
-		print "Single reference system"
+		#print "Single reference system"
 		### generate the DMC and Optimization folders
 		#import setupDMCFolder
 		#setupDMCFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)

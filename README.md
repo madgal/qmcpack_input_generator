@@ -21,9 +21,6 @@ Takes a file from quantum package that is ready for conversion (i.e. save_for_qm
     The Hamiltonians in each are created based on whether a pseudopotential was used. 
     If it's an all-electron calculation then a Cusp Correction folder will be created.
     
-    For single determinant calculations: Only main directory will be generated
-    For mulit determinant  calculations: Within the main directory there will be cutoff directories containing the Optimization and/or DMC folders.
- 
 ### 
    
 ### Example of use
