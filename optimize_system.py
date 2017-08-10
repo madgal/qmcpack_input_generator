@@ -168,10 +168,10 @@ try:
 	if restartSeriesNum >1:
 		index = energies.index(min(energies))
 		### overwrite the wavefunction with the new one
+		### but first back it up
+		os.system("cp " + wfsFile + " " + wfsFile +"_"+str(run))
 		print "Series %s will be used " %series[index] 
 		os.system("cp " + Optfileroot + series[index]+".opt.xml " + wfsFile)
-		### but first back it up
-		os.system("cp " + wfsFile + " " + wfsFile +"_"+prev_optType+str(run))
 	else:
 		###  first back it up
 		os.system("cp " + wfsFile + " " + wfsFile +"_BAK")
