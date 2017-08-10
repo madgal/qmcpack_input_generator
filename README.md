@@ -56,15 +56,12 @@ Takes a file from quantum package that is ready for conversion (i.e. save_for_qm
 	ls
 	     thisSystem.dump     conversion.out     Jastrow123_Multi
 	ls Jastrow123_Multi/
-	     thisSystem.wfs.xml    thisSystem.ptcl.xml    CuspCorrection   cutoff_VALUE/
+	     thisSystem.wfs.xml    thisSystem.ptcl.xml    CuspCorrection  DMC/   Optimization/
 	
-	ls Jastrow123_Multi/cutoff_VALUE/
-	     thisSystem_VALUE.wfs.xml  thisSystem.ptcl.xml   DMC/   Optimization/
-	
-	ls Jastrow123_Multi/cutoff_VALUE/DMC/
+	ls Jastrow123_Multi/DMC/
 	     DMC.xml
 	     
-	ls Jastrow123_Multi/cutoff_VALUE/Optimization/
+	ls Jastrow123_Multi/Optimization/
 	     Opt.xml
 
 # qmcpack optimizer files
