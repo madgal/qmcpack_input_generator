@@ -136,7 +136,8 @@ def main():
 		generate_CuspDir(absfileroot,absfileroot,filePath,multidet)
 		os.chdir(ogDir)
 
-	if multidet:
+	#if multidet:
+	if False:
 		print "Multi reference system"
 		### this will call another program which will generate
 		### cutoff directories containing 
@@ -305,7 +306,7 @@ def generateOpt(pp,filename):
 	file = file+"    <parameter name=\"samplesperthread\">    1 </parameter>\n"
 	file = file+"    <parameter name=\"stepsbetweensamples\">    10 </parameter>\n"
 	file = file+"    <parameter name=\"substeps\">  20 </parameter>\n"
-	file = file+"    <parameter name=\"warmupSteps\">  500 </parameter>\n"
+	file = file+"    <parameter name=\"warmupSteps\">  250 </parameter>\n"
 	file = file+"    <parameter name=\"blocks\"> 10</parameter>\n"
 	file = file+"    <parameter name=\"timestep\">  0.01 </parameter>\n"
 	file = file+"    <parameter name=\"usedrift\">   no </parameter>\n"
@@ -314,13 +315,13 @@ def generateOpt(pp,filename):
 	file = file+"<loop max=\"2\">\n"
 	file = file+"  <qmc method=\"linear\" move=\"pbyp\" checkpoint=\"-1\" gpu=\"yes\">\n"
 	file = file+"    <parameter name=\"blocks\"> 10</parameter>\n"
-	file = file+"    <parameter name=\"warmupSteps\">  250 </parameter>\n"
-	file = file+"    <parameter name=\"timestep\">  0.01 </parameter>\n"
+	file = file+"    <parameter name=\"warmupSteps\">  100 </parameter>\n"
+	file = file+"    <parameter name=\"timestep\">  0.1 </parameter>\n"
 	file = file+"    <parameter name=\"walkers\">   1</parameter>\n"
 	file = file+"    <parameter name=\"samplesperthread\">    1 </parameter>\n"
 	file = file+"    <parameter name=\"stepsbetweensamples\">    10 </parameter>\n"
 	file = file+"    <parameter name=\"substeps\">  20 </parameter>\n"
-	file = file+"    <parameter name=\"minwalkers\">  0.0001 </parameter>\n"
+	file = file+"    <parameter name=\"minwalkers\">  0.001 </parameter>\n"
 	file = file+"    <parameter name=\"usedrift\">   no </parameter>\n"
 	file = file+"    <estimator name=\"LocalEnergy\" hdf5=\"no\"/>\n"
 	file = file+"    <cost name=\"energy\">                   0.9 </cost>\n"
