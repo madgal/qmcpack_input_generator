@@ -12,9 +12,10 @@ Usage:
 			[--noJastrow=<True,False>]
 			[--3BodyJ=<True,False>]
 			[--reoptimizeCoeffs=<True,False>]
+			[--coeffCutoffValue=<float>]
 
 Example of use:
-	./setup_QMC_calculation.py setup  --filename=qp_dumpfilename --method=QP --reoptimizeCoeffs=True
+	./setup_QMC_calculation.py setup  --filename=qp_dumpfilename --method=QP --reoptimizeCoeffs=True --coeffCutoffValue=0.001
 """
 
 ### defaults to adding 3BodyJ
@@ -66,6 +67,8 @@ def main():
 
 	if method=="QP":
 		necessaryInfo = setupMethods.useQuantumPackageMethod(filename)
+	if arguments["--coeffCutoffValue"]:
+		cutoff = float(arguments["--coeffCutoffValue"])
 
 	#elif method=="":
 		#necessaryInfo = setupMethods.useOtherMethod(filename)
@@ -136,13 +139,18 @@ def main():
 		generate_CuspDir(absfileroot,absfileroot,filePath,multidet)
 		os.chdir(ogDir)
 
-	#if multidet:
-	if False:
+	if multidet:
 		#print "Multi reference system"
 		### this will call another program which will generate
 		### cutoff directories containing 
 		### optimization and DMC folders
-		generateCutoff(dirName,absfileroot,fileroot,pseudoDir,elementList,filePath)
+		#generateCutoff(dirName,absfileroot,fileroot,pseudoDir,elementList,filePath)
+		wfsFile = absfileroot + ".wfs.xml"
+		if cutoff:
+			modify_wfs(wfsFile,"Cutoff",multidet,cutoff)
+		else:	
+			modify_wfs(wfsFile,"Cutoff",multidet)
+		
 		
 	else:
 		#print "Single reference system"
