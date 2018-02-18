@@ -160,7 +160,7 @@ def main():
 	ogDir = os.getcwd()
 	os.chdir(dirName)
 	createStepFolder(absfileroot,absfileroot,pseudoDir,elementList,"DMC",filePath)
-	reateStepFolder(absfileroot,absfileroot,pseudoDir,elementList,"Opt",filePath)
+	createStepFolder(absfileroot,absfileroot,pseudoDir,elementList,"Opt",filePath)
 	os.chdir(ogDir)
 	#import setupOptFolder
 	#setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
