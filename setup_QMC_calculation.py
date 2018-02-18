@@ -69,6 +69,8 @@ def main():
 		necessaryInfo = setupMethods.useQuantumPackageMethod(filename)
 	if arguments["--coeffCutoffValue"]:
 		cutoff = float(arguments["--coeffCutoffValue"])
+	else:
+		cutoff=0.000000001
 
 	#elif method=="":
 		#necessaryInfo = setupMethods.useOtherMethod(filename)
