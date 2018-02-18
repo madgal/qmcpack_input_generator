@@ -154,18 +154,17 @@ def main():
 			modify_wfs(wfsFile,"Cutoff",multidet)
 		
 		
-	else:
-		#print "Single reference system"
-		### generate the DMC and Optimization folders
-		#import setupDMCFolder
-		#setupDMCFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
-		ogDir = os.getcwd()
-		os.chdir(dirName)
-		createStepFolder(absfileroot,absfileroot,pseudoDir,elementList,"DMC",filePath)
-		createStepFolder(absfileroot,absfileroot,pseudoDir,elementList,"Opt",filePath)
-		os.chdir(ogDir)
-		#import setupOptFolder
-		#setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
+	### generate the DMC and Optimization folders
+	#import setupDMCFolder
+	#setupDMCFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
+	ogDir = os.getcwd()
+	os.chdir(dirName)
+	createStepFolder(absfileroot,absfileroot,pseudoDir,elementList,"DMC",filePath)
+	reateStepFolder(absfileroot,absfileroot,pseudoDir,elementList,"Opt",filePath)
+	os.chdir(ogDir)
+	#import setupOptFolder
+	#setupOptFolder.makeFolder(dirName,absfileroot,absfileroot,fileroot,doPseudo,elementList,filePath)
+
 def do_conversion(method,dumpfile,filename,flags):
 	import os 
 	#BINDIR ="/soft/applications/qmcpack/github/build_Intel_real/bin"
